@@ -13,6 +13,13 @@ class DataManager {
     
     var cachedItems: [Item]
     
+    enum SortParam{
+        case dateAsc
+        case dateDsc
+        case alphabetic
+        case none
+    }
+    
     var documentDirectory: URL {
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }
@@ -74,6 +81,37 @@ class DataManager {
         }
         
         return items
+    }
+    
+    func filterByCategory(category: Category) -> [Item]{
+        
+        var items: [Item]! = nil
+        let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        let predicate = NSPredicate(format: "category = %@", category)
+        fetchRequest.predicate = predicate
+        
+        do {
+            items = try context.fetch(fetchRequest)
+        } catch {
+            debugPrint("Could not load items from Core Data")
+        }
+    
+        return items
+        
+    }
+    
+    func sort(byParams params : SortParam = .none){
+        switch params {
+        case .dateAsc:
+            self.cachedItems = cachedItems.sorted{ $0.createdAt! > $1.createdAt!}
+        case .dateDsc:
+            self.cachedItems = cachedItems.sorted{ $0.createdAt! < $1.createdAt!}
+        case .alphabetic:
+            self.cachedItems = cachedItems.sorted{ $0.name?.localizedStandardCompare($1.name!) == ComparisonResult.orderedAscending}
+        case .none:
+            print("pas de tri")
+        }
     }
     
     // MARK: - Core Data stack

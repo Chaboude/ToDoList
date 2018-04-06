@@ -31,6 +31,7 @@ class ListViewController: UIViewController {
     
     override func awakeFromNib() {
         dataManager.loadItems()
+        dataManager.sort(byParams: .alphabetic)
         items2 = dataManager.cachedItems
     }
     
