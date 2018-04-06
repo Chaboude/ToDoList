@@ -12,6 +12,16 @@ import CoreData
 class DataManager {
     
     var cachedItems: [Item]
+    var cachedCategories: [Category]
+    
+    enum SortParam{
+        case dateAsc
+        case dateDsc
+        case alphabetic
+        case none
+    }
+    
+
     
     var documentDirectory: URL {
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -21,45 +31,98 @@ class DataManager {
         return documentDirectory.appendingPathComponent("CheckLists").appendingPathExtension("json")
     }
     
+    var context: NSManagedObjectContext{
+        return persistentContainer.viewContext
+    }
+    
     static let sharedInstance = DataManager()
     private init(){
         cachedItems = []
+        cachedCategories = []
     }
 
     func saveItems(){
-        /*let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-        let data = try? encoder.encode(cachedItems)
-        try? data?.write(to: self.dataFileUrl)
-        print(String(data: data!, encoding: .utf8)!)*/
         saveContext()
     }
     
     func addItems(text: String){
         let item = Item(context: persistentContainer.viewContext)
+        item.createdAt = Date()
         item.name = text
         item.checked = false
         self.cachedItems.append(item)
         saveItems()
     }
     
+    func addCategory(text: String){
+        let category = Category(context: persistentContainer.viewContext)
+        category.createdAt = Date()
+        category.name = text
+        self.cachedCategories.append(category)
+        saveItems()
+    }
+    
+    func delete(item: Item){
+        context.delete(item)
+        saveItems()
+    }
+    
     func loadItems(){
-        /*let decoder = JSONDecoder()
-        do{
-            let stringJSON = try String(contentsOf: self.dataFileUrl, encoding: .utf8).data(using: .utf8)
-            let data = try decoder.decode([Item].self, from:stringJSON!)
-            self.cachedItems = data
+        let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+        do {
+           cachedItems = try context.fetch(fetchRequest)
+        } catch {
+            debugPrint("Could not noad the item from Core Data")
         }
-        catch{}*/
     }
     
     func filterItems(textToFind: String) -> [Item]{
         
-        if(textToFind.isEmpty){
-            return DataManager.sharedInstance.cachedItems
+        var items: [Item]! = nil
+        let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        if textToFind.count > 0 {
+            let predicate = NSPredicate(format: "name contains[cd] %@", textToFind)
+            fetchRequest.predicate = predicate
         }
-        else{
-            return self.cachedItems.filter{ $0.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current).contains(textToFind.lowercased()) }
+        
+        do {
+            items = try context.fetch(fetchRequest)
+        } catch {
+            debugPrint("Could not load items from Core Data")
+        }
+        
+        return items
+    }
+    
+    func filterByCategory(category: Category) -> [Item]{
+        
+        var items: [Item]! = nil
+        let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        let predicate = NSPredicate(format: "category = %@", category)
+        fetchRequest.predicate = predicate
+        
+        do {
+            items = try context.fetch(fetchRequest)
+        } catch {
+            debugPrint("Could not load items from Core Data")
+        }
+    
+        return items
+        
+    }
+    
+    func sort(byParams params : SortParam = .none){
+        switch params {
+        case .dateAsc:
+            self.cachedItems = cachedItems.sorted{ $0.createdAt! > $1.createdAt!}
+        case .dateDsc:
+            self.cachedItems = cachedItems.sorted{ $0.createdAt! < $1.createdAt!}
+        case .alphabetic:
+            self.cachedItems = cachedItems.sorted{ $0.name?.localizedStandardCompare($1.name!) == ComparisonResult.orderedAscending}
+        case .none:
+            print("pas de tri")
         }
     }
     

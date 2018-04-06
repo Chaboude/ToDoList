@@ -64,6 +64,7 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="checkmarkLabel" destination="la2-sc-LTA" id="8GO-3H-hLA"/>
+                                            <outlet property="nameLabel" destination="VRL-qr-HRB" id="1NB-L3-VE1"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -134,7 +135,13 @@
                             <outlet property="delegate" destination="Van-k0-alm" id="82a-K1-1j6"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Categories" id="Fdj-mv-QSn"/>
+                    <navigationItem key="navigationItem" title="Categories" id="Fdj-mv-QSn">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="xEo-mc-ext">
+                            <connections>
+                                <action selector="addAction:" destination="Van-k0-alm" id="0IN-Rq-8UM"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dOI-88-rAL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -32,6 +32,7 @@ class ListViewController: UIViewController {
     
     override func awakeFromNib() {
         dataManager.loadItems()
+        dataManager.sort(byParams: .alphabetic)
         items2 = dataManager.cachedItems
     }
     
@@ -57,27 +58,6 @@ class ListViewController: UIViewController {
         alertController.addAction(okAction)
         present(alertController, animated: true, completion: nil)
         
-    }
-    
-    @IBAction func editAction(_ sender: Any) {
-        tableView.isEditing = !tableView.isEditing
-        
-        //let buttonType: UIBarButtonItem = tableView.isEditing ? .done : .edit
-        //navigationItem.setLeftBarButton(, animated: true)
-    }
-    
-    func configureCheckmark(for cell: UITableViewCell, withItem item: Item)
-    {
-        let myCell = cell as! ListTableViewCell
-        myCell.checkmarkLabel.isHidden = !item.checked
-        
-        
-        
-    }
-    func configureText(for cell: UITableViewCell, withItem item: Item)
-    {
-        let myCell = cell as! ListTableViewCell
-        myCell.nameLabel?.text = item.name
     }
     
     
@@ -110,6 +90,7 @@ extension ListViewController : UITableViewDataSource, UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         let item = items2[indexPath.row]
         item.checked = !item.checked
+        self.dataManager.saveItems()
         tableView.reloadRows(at: [indexPath], with: .automatic)
         
     }
@@ -121,9 +102,8 @@ extension ListViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         let itemIndex = dataManager.cachedItems.index(where:{ $0 === items2[indexPath.item]})!
         items2.remove(at: indexPath.item)
-        dataManager.cachedItems.remove(at: itemIndex)
+        dataManager.delete(item: dataManager.cachedItems[itemIndex])
         tableView.deleteRows(at: [indexPath], with: .automatic)
-        dataManager.saveItems()
     }
     
 }
