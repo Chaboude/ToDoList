@@ -43,6 +43,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B861ECDB207765D8004EEBC6 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B89C0681206E311D0022B4FB /* Item.swift */,
+				B861ECB72077520E004EEBC6 /* ToDoList.xcdatamodeld */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		B861ECDC207765E5004EEBC6 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				B89C0685206E7B910022B4FB /* DataManager.swift */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
+		B861ECDD20776609004EEBC6 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				B89C067F206E24020022B4FB /* ListTableViewCell.swift */,
+				B89C066F206E1FC30022B4FB /* ListViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
 		B89C0661206E1FC30022B4FB = {
 			isa = PBXGroup;
 			children = (
@@ -63,15 +89,13 @@
 			isa = PBXGroup;
 			children = (
 				B89C066D206E1FC30022B4FB /* AppDelegate.swift */,
-				B89C066F206E1FC30022B4FB /* ListViewController.swift */,
-				B89C0671206E1FC30022B4FB /* Main.storyboard */,
+				B861ECDD20776609004EEBC6 /* ViewControllers */,
+				B861ECDC207765E5004EEBC6 /* Manager */,
+				B861ECDB207765D8004EEBC6 /* Models */,
 				B89C0674206E1FC30022B4FB /* Assets.xcassets */,
+				B89C0671206E1FC30022B4FB /* Main.storyboard */,
 				B89C0676206E1FC30022B4FB /* LaunchScreen.storyboard */,
 				B89C0679206E1FC30022B4FB /* Info.plist */,
-				B89C067F206E24020022B4FB /* ListTableViewCell.swift */,
-				B89C0681206E311D0022B4FB /* Item.swift */,
-				B89C0685206E7B910022B4FB /* DataManager.swift */,
-				B861ECB72077520E004EEBC6 /* ToDoList.xcdatamodeld */,
 			);
 			path = ToDoList;
 			sourceTree = "<group>";
