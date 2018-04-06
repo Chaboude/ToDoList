@@ -42,10 +42,10 @@ class ListViewController: UIViewController {
             (action) in
             
             let textField = alertController.textFields![0]
-            let item = Item(name: textField.text!)
-            self.dataManager.cachedItems.append(item)
+            
+            self.dataManager.addItems(text: textField.text!)
+            
             self.tableView.reloadData()
-            self.dataManager.saveItems()
             self.items2 = self.dataManager.cachedItems
             self.searchBar.text = ""
             self.tableView.reloadData()
@@ -60,6 +60,9 @@ class ListViewController: UIViewController {
     
     @IBAction func editAction(_ sender: Any) {
         tableView.isEditing = !tableView.isEditing
+        
+        //let buttonType: UIBarButtonItem = tableView.isEditing ? .done : .edit
+        //navigationItem.setLeftBarButton(, animated: true)
     }
     
 }
@@ -96,7 +99,7 @@ extension ListViewController : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return dataManager.cachedItems.count > 1
+        return dataManager.cachedItems.count > 0
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class Item : Codable{
+/*class Item : Codable{
     var name: String
     var checked = false
     
@@ -16,4 +16,4 @@ class Item : Codable{
         self.name = name
     }
 
-}
+}*/
