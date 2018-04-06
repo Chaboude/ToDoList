@@ -13,6 +13,7 @@ class ListViewController: UIViewController {
     //MARK: Outlets
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
+
     
     var items2 = [Item]()
     
@@ -65,6 +66,21 @@ class ListViewController: UIViewController {
         //navigationItem.setLeftBarButton(, animated: true)
     }
     
+    func configureCheckmark(for cell: UITableViewCell, withItem item: Item)
+    {
+        let myCell = cell as! ListTableViewCell
+        myCell.checkmarkLabel.isHidden = !item.checked
+        
+        
+        
+    }
+    func configureText(for cell: UITableViewCell, withItem item: Item)
+    {
+        let myCell = cell as! ListTableViewCell
+        myCell.nameLabel?.text = item.name
+    }
+    
+    
 }
 
 extension ListViewController : UITableViewDataSource, UITableViewDelegate {
@@ -75,11 +91,11 @@ extension ListViewController : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ListViewCellIdentifier")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ListViewCellIdentifier") as! ListTableViewCell
         let item = items2[indexPath.row]
-        cell?.textLabel?.text = item.name
-        cell?.accessoryType = item.checked ? .checkmark : .none
-        return cell!
+        cell.nameLabel.text = item.name
+        cell.checkmarkLabel.isHidden = !item.checked
+        return cell
     }
     
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
