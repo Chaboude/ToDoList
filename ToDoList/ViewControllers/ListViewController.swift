@@ -94,6 +94,7 @@ extension ListViewController : UITableViewDataSource, UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         let item = items2[indexPath.row]
         item.checked = !item.checked
+        self.dataManager.saveItems()
         tableView.reloadRows(at: [indexPath], with: .automatic)
         
     }
@@ -105,9 +106,8 @@ extension ListViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         let itemIndex = dataManager.cachedItems.index(where:{ $0 === items2[indexPath.item]})!
         items2.remove(at: indexPath.item)
-        dataManager.cachedItems.remove(at: itemIndex)
+        dataManager.delete(item: dataManager.cachedItems[itemIndex])
         tableView.deleteRows(at: [indexPath], with: .automatic)
-        dataManager.saveItems()
     }
     
 }

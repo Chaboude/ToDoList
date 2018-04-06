@@ -21,46 +21,59 @@ class DataManager {
         return documentDirectory.appendingPathComponent("CheckLists").appendingPathExtension("json")
     }
     
+    var context: NSManagedObjectContext{
+        return persistentContainer.viewContext
+    }
+    
     static let sharedInstance = DataManager()
     private init(){
         cachedItems = []
     }
 
     func saveItems(){
-        /*let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-        let data = try? encoder.encode(cachedItems)
-        try? data?.write(to: self.dataFileUrl)
-        print(String(data: data!, encoding: .utf8)!)*/
         saveContext()
     }
     
     func addItems(text: String){
         let item = Item(context: persistentContainer.viewContext)
+        item.createdAt = Date()
         item.name = text
         item.checked = false
         self.cachedItems.append(item)
         saveItems()
     }
     
+    func delete(item: Item){
+        context.delete(item)
+        saveItems()
+    }
+    
     func loadItems(){
-        /*let decoder = JSONDecoder()
-        do{
-            let stringJSON = try String(contentsOf: self.dataFileUrl, encoding: .utf8).data(using: .utf8)
-            let data = try decoder.decode([Item].self, from:stringJSON!)
-            self.cachedItems = data
+        let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+        do {
+           cachedItems = try context.fetch(fetchRequest)
+        } catch {
+            debugPrint("Could not noad the item from Core Data")
         }
-        catch{}*/
     }
     
     func filterItems(textToFind: String) -> [Item]{
         
-        if(textToFind.isEmpty){
-            return DataManager.sharedInstance.cachedItems
+        var items: [Item]! = nil
+        let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        if textToFind.count > 0 {
+            let predicate = NSPredicate(format: "name contains[cd] %@", textToFind)
+            fetchRequest.predicate = predicate
         }
-        else{
-            return self.cachedItems.filter{ $0.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current).contains(textToFind.lowercased()) }
+        
+        do {
+            items = try context.fetch(fetchRequest)
+        } catch {
+            debugPrint("Could not load items from Core Data")
         }
+        
+        return items
     }
     
     // MARK: - Core Data stack

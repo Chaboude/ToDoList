@@ -41,5 +41,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconAdd</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>ISSOU</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string> addBundleIdentifier.showPictures</string>
+		</dict>
+	</array>
 </dict>
 </plist>
