@@ -14,8 +14,8 @@ class DataManager {
     var cachedItems: [Item]
     var cachedCategories: [Category]
     
-    enum SortParam{
-        case dateAsc
+    enum SortParam: String{
+        case dateAsc = "createdAt"
         case dateDsc
         case alphabetic
         case none
@@ -51,7 +51,9 @@ class DataManager {
         item.name = text
         item.checked = false
         item.category = category
+        item.image?.data = UIImagePNGRepresentation(#imageLiteral(resourceName: "justdoit"))
         self.cachedItems.append(item)
+        self.sort(byParams: .alphabetic,forElements: cachedItems)
         saveItems()
     }
     
@@ -60,18 +62,27 @@ class DataManager {
         category.createdAt = Date()
         category.name = text
         self.cachedCategories.append(category)
+        self.sort(byParams: .alphabetic,forElements: cachedCategories)
         saveItems()
     }
     
-    func delete<T: NSManagedObject>(objet: T){
-        context.delete(objet)
-        saveItems()
+    func delete(item: Item? = nil, category: Category){
+        if item != nil{
+            context.delete(item!)
+            saveItems()
+            getItemsForCategory(category)
+        }else{
+            context.delete(category)
+            saveItems()
+            loadCategory()
+        }
     }
     
     func loadCategory(){
         let fetchRequest: NSFetchRequest<Category> = Category.fetchRequest()
         do {
            cachedCategories = try context.fetch(fetchRequest)
+           self.sort(byParams: .alphabetic,forElements: cachedCategories)
         
         } catch {
             debugPrint("Could not noad the item from Core Data")
@@ -84,6 +95,7 @@ class DataManager {
         fetchRequest.predicate = NSPredicate(format:"category = %@", category)
         do{
             cachedItems = try context.fetch(fetchRequest)
+            self.sort(byParams: .alphabetic,forElements: cachedItems)
         } catch {
             debugPrint("Could not noad the item from Core Data")
         }
@@ -111,18 +123,51 @@ class DataManager {
     }
     
     
-    func sort(byParams params : SortParam = .none, andType: TypeToSort){
-    
-        switch params {
-        case .dateAsc:
-            self.cachedItems = cachedItems.sorted{ $0.createdAt! > $1.createdAt!}
-        case .dateDsc:
-            self.cachedItems = cachedItems.sorted{ $0.createdAt! < $1.createdAt!}
-        case .alphabetic:
-            self.cachedItems = cachedItems.sorted{ $0.name?.localizedStandardCompare($1.name!) == ComparisonResult.orderedAscending}
-        case .none:
-            print("pas de tri")
+    func sort(byParams params : SortParam = .none, forElements cachedData: Any){
+        let sortDescriptors: NSSortDescriptor
+        if let array = cachedData as? [Item]{
+            let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+            switch params {
+            case .dateAsc:
+                sortDescriptors = NSSortDescriptor(key: "createdAt", ascending: true)
+                fetchRequest.sortDescriptors = [sortDescriptors]
+            case .dateDsc:
+                sortDescriptors = NSSortDescriptor(key: "createdAt", ascending: false)
+                fetchRequest.sortDescriptors = [sortDescriptors]
+            case .alphabetic:
+                sortDescriptors = NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))
+                fetchRequest.sortDescriptors = [sortDescriptors]
+            case .none:
+                print("pas de tri")
+            }
+            do {
+                cachedItems = try context.fetch(fetchRequest)
+            } catch {
+                debugPrint("Could not load items from Core Data")
+            }
         }
+        else if let array = cachedData as? [Category]{
+            let fetchRequest: NSFetchRequest<Category> = Category.fetchRequest()
+            switch params {
+            case .dateAsc:
+                sortDescriptors = NSSortDescriptor(key: "createdAt", ascending: true)
+                fetchRequest.sortDescriptors = [sortDescriptors]
+            case .dateDsc:
+                sortDescriptors = NSSortDescriptor(key: "createdAt", ascending: false)
+                fetchRequest.sortDescriptors = [sortDescriptors]
+            case .alphabetic:
+                sortDescriptors = NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))
+                fetchRequest.sortDescriptors = [sortDescriptors]
+            case .none:
+                print("pas de tri")
+            }
+            do {
+                cachedCategories = try context.fetch(fetchRequest)
+            } catch {
+                debugPrint("Could not load items from Core Data")
+            }
+        }
+        
     }
     
     // MARK: - Core Data stack

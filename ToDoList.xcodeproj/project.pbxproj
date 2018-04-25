@@ -17,6 +17,7 @@
 		B89C0682206E311D0022B4FB /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89C0681206E311D0022B4FB /* Item.swift */; };
 		B89C0686206E7B910022B4FB /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89C0685206E7B910022B4FB /* DataManager.swift */; };
 		B8F6369520776EEA0095E241 /* CategoriesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F6369420776EEA0095E241 /* CategoriesTableViewController.swift */; };
+		B8FBF9C62090D3AF00403A88 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8FBF9C52090D3AE00403A88 /* DetailViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		B89C0681206E311D0022B4FB /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		B89C0685206E7B910022B4FB /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		B8F6369420776EEA0095E241 /* CategoriesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesTableViewController.swift; sourceTree = "<group>"; };
+		B8FBF9C52090D3AE00403A88 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +70,7 @@
 				B89C067F206E24020022B4FB /* ListTableViewCell.swift */,
 				B89C066F206E1FC30022B4FB /* ListViewController.swift */,
 				B8F6369420776EEA0095E241 /* CategoriesTableViewController.swift */,
+				B8FBF9C52090D3AE00403A88 /* DetailViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -182,6 +185,7 @@
 				B89C066E206E1FC30022B4FB /* AppDelegate.swift in Sources */,
 				B89C0680206E24020022B4FB /* ListTableViewCell.swift in Sources */,
 				B8F6369520776EEA0095E241 /* CategoriesTableViewController.swift in Sources */,
+				B8FBF9C62090D3AF00403A88 /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

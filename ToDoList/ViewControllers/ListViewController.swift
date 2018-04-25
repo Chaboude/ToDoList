@@ -16,8 +16,8 @@ class ListViewController: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
 
     
-    var items2 = [Item]()
     var category: Category?
+    var selectedItem: Item?
     var alertController : UIAlertController?
     
     var dataManager: DataManager = DataManager.sharedInstance
@@ -30,7 +30,7 @@ class ListViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         dataManager.getItemsForCategory(category!)
-        items2 = dataManager.cachedItems
+        
     }
     
     //MARK: Actions
@@ -44,23 +44,24 @@ class ListViewController: UIViewController {
             
             self.dataManager.addItems(text: (textField?.text!)!, category: self.category)
             
-            self.tableView.reloadData()
-            self.items2 = self.dataManager.cachedItems
             self.searchBar.text = ""
             self.tableView.reloadData()
         }
+        let cancelAction = UIAlertAction(title: "Annuler", style: .cancel )
         alertController?.addTextField{(textfield) in
             textfield.placeholder = "Name"
             textfield.addTarget(self, action: #selector(self.alertTextFieldDidChange(_:)), for: .editingChanged)
         }
-        okAction.isEnabled = false    
+        
+        okAction.isEnabled = false
+        alertController?.addAction(cancelAction)
         alertController?.addAction(okAction)
         present(alertController!, animated: true, completion: nil)
         
     }
     
     @objc func alertTextFieldDidChange(_ sender: UITextField) {
-        alertController?.actions[0].isEnabled = sender.text!.count > 0
+        alertController?.actions[1].isEnabled = sender.text!.count > 0
     }
     
     
@@ -70,28 +71,22 @@ extension ListViewController : UITableViewDataSource, UITableViewDelegate {
     
     //MARK: UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items2.count
+        return dataManager.cachedItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ListViewCellIdentifier") as! ListTableViewCell
-        let item = items2[indexPath.row]
+        let item = dataManager.cachedItems[indexPath.row]
         cell.nameLabel.text = item.name
         cell.checkmarkLabel.isHidden = !item.checked
         return cell
     }
     
-    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let sourceItem = dataManager.cachedItems.remove(at: sourceIndexPath.row)
-        let sourceItem2 = items2.remove(at: sourceIndexPath.row)
-        dataManager.cachedItems.insert(sourceItem, at: destinationIndexPath.row)
-        items2.insert(sourceItem2, at: destinationIndexPath.row)
-    }
     
     //MARK: UITableViewDelegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let item = items2[indexPath.row]
+        let item = dataManager.cachedItems[indexPath.row]
         item.checked = !item.checked
         self.dataManager.saveItems()
         tableView.reloadRows(at: [indexPath], with: .automatic)
@@ -103,10 +98,15 @@ extension ListViewController : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        let itemIndex = dataManager.cachedItems.index(where:{ $0 === items2[indexPath.item]})!
-        items2.remove(at: indexPath.item)
-        dataManager.delete(objet: dataManager.cachedItems[itemIndex])
+        let item = dataManager.cachedItems[indexPath.row]
+        dataManager.delete(item: item, category: category!)
         tableView.deleteRows(at: [indexPath], with: .automatic)
+        tableView.reloadData()
+    }
+    
+    func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+            selectedItem = dataManager.cachedItems[indexPath.row]
+            performSegue(withIdentifier: "FromItemToDetail", sender: nil)
     }
     
 }
@@ -114,8 +114,18 @@ extension ListViewController : UITableViewDataSource, UITableViewDelegate {
 extension ListViewController : UISearchBarDelegate{
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        items2 = dataManager.filterItems(textToFind: searchText)
+        dataManager.cachedItems = dataManager.filterItems(textToFind: searchText)
         tableView.reloadData()
+    }
+}
+
+extension ListViewController
+{
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "FromItemToDetail"{
+            let dest = segue.destination as! DetailViewController
+            dest.item = selectedItem!
+        }
     }
 }
 

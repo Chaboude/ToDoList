@@ -10,17 +10,16 @@ import UIKit
 
 class CategoriesTableViewController: UITableViewController {
     let formatter = DateFormatter()
+     var dataManager: DataManager = DataManager.sharedInstance
     
     
-    
-    var categories = [Category]()
+
     var selectedCategoty: Category?
     var alertController : UIAlertController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        DataManager.sharedInstance.loadCategory()
-        categories = DataManager.sharedInstance.cachedCategories
+        dataManager.loadCategory()
 
     }
 
@@ -37,17 +36,19 @@ class CategoriesTableViewController: UITableViewController {
             
             let textField = self.alertController?.textFields![0]
             
-            DataManager.sharedInstance.addCategory(text: (textField?.text!)!)
-            
+            self.dataManager.addCategory(text: (textField?.text!)!)
             self.tableView.reloadData()
-            self.categories = DataManager.sharedInstance.cachedCategories
         }
+        
+        let cancelAction = UIAlertAction(title: "Annuler", style: .cancel )
         alertController?.addTextField{(textfield) in
             textfield.placeholder = "Name"
             textfield.addTarget(self, action: #selector(self.alertTextFieldDidChange(_:)), for: .editingChanged)
         }
         okAction.isEnabled = false
         alertController?.addAction(okAction)
+        alertController?.addAction(cancelAction)
+        
         present(alertController!, animated: true, completion: nil)
         
         
@@ -73,15 +74,22 @@ class CategoriesTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        cell.textLabel?.text = categories[indexPath.row].name
+        cell.textLabel?.text = dataManager.cachedCategories[indexPath.row].name
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        cell.detailTextLabel?.text = formatter.string(from:categories[indexPath.row].createdAt!)
+        cell.detailTextLabel?.text = formatter.string(from:dataManager.cachedCategories[indexPath.row].createdAt!)
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedCategoty = categories[indexPath.row]
+        selectedCategoty = dataManager.cachedCategories[indexPath.row]
         performSegue(withIdentifier: "FromCategoriesToItem", sender: nil)
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        let category = dataManager.cachedCategories[indexPath.row]
+        dataManager.delete(item: nil, category: category)
+        tableView.deleteRows(at: [indexPath], with: .automatic)
+        tableView.reloadData()
     }
     
 }
