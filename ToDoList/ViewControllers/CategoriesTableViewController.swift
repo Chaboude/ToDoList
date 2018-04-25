@@ -15,6 +15,7 @@ class CategoriesTableViewController: UITableViewController {
     
     var categories = [Category]()
     var selectedCategoty: Category?
+    var alertController : UIAlertController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,24 +31,32 @@ class CategoriesTableViewController: UITableViewController {
     
     @IBAction func addAction(_ sender: Any) {
         
-        let alertController = UIAlertController(title: "DO IT ?", message: "Give this category a name !", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "ok", style: .default){
+        alertController = UIAlertController(title: "DO IT ?", message: "Give this category a name !", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default){
             (action) in
             
-            let textField = alertController.textFields![0]
+            let textField = self.alertController?.textFields![0]
             
-            DataManager.sharedInstance.addCategory(text: textField.text!)
+            DataManager.sharedInstance.addCategory(text: (textField?.text!)!)
             
             self.tableView.reloadData()
             self.categories = DataManager.sharedInstance.cachedCategories
         }
-        alertController.addTextField{(textfield) in
+        alertController?.addTextField{(textfield) in
             textfield.placeholder = "Name"
+            textfield.addTarget(self, action: #selector(self.alertTextFieldDidChange(_:)), for: .editingChanged)
         }
-        alertController.addAction(okAction)
-        present(alertController, animated: true, completion: nil)
+        okAction.isEnabled = false
+        alertController?.addAction(okAction)
+        present(alertController!, animated: true, completion: nil)
+        
         
     }
+    
+    @objc func alertTextFieldDidChange(_ sender: UITextField) {
+        alertController?.actions[0].isEnabled = sender.text!.count > 0
+    }
+    
 
     // MARK: - Table view data source
 

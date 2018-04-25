@@ -63,8 +63,8 @@ class DataManager {
         saveItems()
     }
     
-    func delete(item: Item){
-        context.delete(item)
+    func delete<T: NSManagedObject>(objet: T){
+        context.delete(objet)
         saveItems()
     }
     

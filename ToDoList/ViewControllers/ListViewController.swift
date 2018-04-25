@@ -18,6 +18,7 @@ class ListViewController: UIViewController {
     
     var items2 = [Item]()
     var category: Category?
+    var alertController : UIAlertController?
     
     var dataManager: DataManager = DataManager.sharedInstance
     
@@ -35,25 +36,31 @@ class ListViewController: UIViewController {
     //MARK: Actions
     @IBAction func addAction(_ sender: Any) {
         
-        let alertController = UIAlertController(title: "DO IT ?", message: "You can do it", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "ok", style: .default){
+        alertController = UIAlertController(title: "DO IT ?", message: "You can do it", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default){
             (action) in
             
-            let textField = alertController.textFields![0]
+            let textField = self.alertController?.textFields![0]
             
-            self.dataManager.addItems(text: textField.text!, category: self.category)
+            self.dataManager.addItems(text: (textField?.text!)!, category: self.category)
             
             self.tableView.reloadData()
             self.items2 = self.dataManager.cachedItems
             self.searchBar.text = ""
             self.tableView.reloadData()
         }
-        alertController.addTextField{(textfield) in
+        alertController?.addTextField{(textfield) in
             textfield.placeholder = "Name"
+            textfield.addTarget(self, action: #selector(self.alertTextFieldDidChange(_:)), for: .editingChanged)
         }
-        alertController.addAction(okAction)
-        present(alertController, animated: true, completion: nil)
+        okAction.isEnabled = false    
+        alertController?.addAction(okAction)
+        present(alertController!, animated: true, completion: nil)
         
+    }
+    
+    @objc func alertTextFieldDidChange(_ sender: UITextField) {
+        alertController?.actions[0].isEnabled = sender.text!.count > 0
     }
     
     
@@ -98,7 +105,7 @@ extension ListViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         let itemIndex = dataManager.cachedItems.index(where:{ $0 === items2[indexPath.item]})!
         items2.remove(at: indexPath.item)
-        dataManager.delete(item: dataManager.cachedItems[itemIndex])
+        dataManager.delete(objet: dataManager.cachedItems[itemIndex])
         tableView.deleteRows(at: [indexPath], with: .automatic)
     }
     
