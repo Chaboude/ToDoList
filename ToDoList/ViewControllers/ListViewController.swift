@@ -1,3 +1,4 @@
+
 //
 //  ViewController.swift
 //  ToDoList
@@ -16,23 +17,18 @@ class ListViewController: UIViewController {
 
     
     var items2 = [Item]()
+    var category: Category?
     
     var dataManager: DataManager = DataManager.sharedInstance
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
     }
     
-//    func createitems(){
-//        for item in items{
-//            let newElement = Item(name: item)
-//            items2.append(newElement)
-//        }
-//    }
-    
-    override func awakeFromNib() {
-        dataManager.loadItems()
-        dataManager.sort(byParams: .alphabetic)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        dataManager.getItemsForCategory(category!)
         items2 = dataManager.cachedItems
     }
     
@@ -45,7 +41,7 @@ class ListViewController: UIViewController {
             
             let textField = alertController.textFields![0]
             
-            self.dataManager.addItems(text: textField.text!)
+            self.dataManager.addItems(text: textField.text!, category: self.category)
             
             self.tableView.reloadData()
             self.items2 = self.dataManager.cachedItems

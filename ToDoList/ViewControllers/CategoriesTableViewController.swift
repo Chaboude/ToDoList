@@ -14,9 +14,12 @@ class CategoriesTableViewController: UITableViewController {
     
     
     var categories = [Category]()
+    var selectedCategoty: Category?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        DataManager.sharedInstance.loadCategory()
+        categories = DataManager.sharedInstance.cachedCategories
 
     }
 
@@ -67,7 +70,19 @@ class CategoriesTableViewController: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selectedCategoty = categories[indexPath.row]
+        performSegue(withIdentifier: "FromCategoriesToItem", sender: nil)
+    }
+    
+}
 
-  
-
+extension CategoriesTableViewController
+{
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "FromCategoriesToItem"{
+            let destination = segue.destination as! ListViewController
+            destination.category = self.selectedCategoty
+        }
+    }
 }

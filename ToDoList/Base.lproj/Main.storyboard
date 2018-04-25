@@ -125,9 +125,6 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="BYZ-38-t0r" kind="show" identifier="FromCategoriesToItem" id="N5e-cQ-EJC"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -142,6 +139,9 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="FromCategoriesToItem" id="Ae1-UX-6tm"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dOI-88-rAL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

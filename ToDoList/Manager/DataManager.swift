@@ -45,11 +45,12 @@ class DataManager {
         saveContext()
     }
     
-    func addItems(text: String){
+    func addItems(text: String, category: Category? = nil){
         let item = Item(context: persistentContainer.viewContext)
         item.createdAt = Date()
         item.name = text
         item.checked = false
+        item.category = category
         self.cachedItems.append(item)
         saveItems()
     }
@@ -67,14 +68,28 @@ class DataManager {
         saveItems()
     }
     
-    func loadItems(){
-        let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+    func loadCategory(){
+        let fetchRequest: NSFetchRequest<Category> = Category.fetchRequest()
         do {
-           cachedItems = try context.fetch(fetchRequest)
+           cachedCategories = try context.fetch(fetchRequest)
+        
         } catch {
             debugPrint("Could not noad the item from Core Data")
         }
     }
+    
+    func getItemsForCategory(_ category: Category)
+    {
+        let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format:"category = %@", category)
+        do{
+            cachedItems = try context.fetch(fetchRequest)
+        } catch {
+            debugPrint("Could not noad the item from Core Data")
+        }
+    }
+    
+    
     
     func filterItems(textToFind: String) -> [Item]{
         
@@ -95,25 +110,9 @@ class DataManager {
         return items
     }
     
-    func filterByCategory(category: Category) -> [Item]{
-        
-        var items: [Item]! = nil
-        let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
-        
-        let predicate = NSPredicate(format: "category = %@", category)
-        fetchRequest.predicate = predicate
-        
-        do {
-            items = try context.fetch(fetchRequest)
-        } catch {
-            debugPrint("Could not load items from Core Data")
-        }
     
-        return items
-        
-    }
+    func sort(byParams params : SortParam = .none, andType: TypeToSort){
     
-    func sort(byParams params : SortParam = .none){
         switch params {
         case .dateAsc:
             self.cachedItems = cachedItems.sorted{ $0.createdAt! > $1.createdAt!}
@@ -171,4 +170,9 @@ class DataManager {
         }
     }
 
+}
+
+enum TypeToSort {
+    case item
+    case category
 }
