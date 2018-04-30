@@ -51,7 +51,11 @@ class DataManager {
         item.name = text
         item.checked = false
         item.category = category
-        item.image?.data = UIImagePNGRepresentation(#imageLiteral(resourceName: "justdoit"))
+        let img = Image(context: DataManager.sharedInstance.context)
+        img.data = UIImagePNGRepresentation(#imageLiteral(resourceName: "justdoit"))
+        img.createdAt = Date()
+        img.updatedAt = Date()
+        item.image = img
         self.cachedItems.append(item)
         self.sort(byParams: .alphabetic,forElements: cachedItems)
         saveItems()
